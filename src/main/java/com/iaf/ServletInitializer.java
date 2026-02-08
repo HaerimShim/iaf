@@ -1,4 +1,4 @@
-package com.example.iaf;
+package com.iaf;
 
 import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
