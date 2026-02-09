@@ -1,8 +1,9 @@
 h2 { margin: 0 20px 16px; }
 table { margin: 0 20px; width: calc(100% - 40px); border-collapse: collapse; }
 .search-form { margin: 0 20px 20px; padding: 16px; background-color: #f9f9f9; border: 1px solid #ddd; border-radius: 4px; }
-th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: center; }
-th { background-color: #f0f0f0; font-size: 13px; }
+th, td { border: 1px solid #ccc; padding: 8px 12px; text-align: center; font-size: 13px; }
+th { background-color: #f0f0f0; }
+td.num { text-align: right; }
 .th-group { background-color: #e0e0e0; }
 .safe { background-color: #d4edda; }
 .warning { background-color: #fff3cd; }

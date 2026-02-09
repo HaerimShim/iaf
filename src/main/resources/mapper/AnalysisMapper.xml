@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.iaf.mapper.AnalysisMapper">
+
+    <select id="selectClientList" resultType="Client">
+        SELECT client_id, client_name, status
+        FROM CLIENT
+        WHERE status = 'ACTIVE'
+        ORDER BY client_name
+    </select>
+
+    <select id="selectAnalysisResult" parameterType="AnalysisSearchParam" resultType="AnalysisResult">
+        SELECT
+            s.category,
+            s.sku_code,
+            s.sku_name,
+            COALESCE(inb.inbound_qty, 0) AS inbound_qty,
+            COALESCE(outb.outbound_qty, 0) AS outbound_qty,
+            snap.on_hand_qty,
+            ROUND(COALESCE(outb.outbound_qty, 0) / #{recentDays}, 2) AS avg_daily_outbound
+        FROM SKU s
+        INNER JOIN INVENTORY_SNAPSHOT snap
+            ON s.sku_id = snap.sku_id AND snap.snapshot_date = #{baseDate}
+        LEFT JOIN (
+            SELECT sku_id, SUM(inbound_qty) AS inbound_qty
+            FROM INBOUND_TXN
+            WHERE inbound_dt BETWEEN DATE_SUB(#{baseDate}, INTERVAL #{recentDays} DAY) AND #{baseDate}
+            GROUP BY sku_id
+        ) inb ON s.sku_id = inb.sku_id
+        LEFT JOIN (
+            SELECT sku_id, SUM(outbound_qty) AS outbound_qty
+            FROM OUTBOUND_TXN
+            WHERE outbound_dt BETWEEN DATE_SUB(#{baseDate}, INTERVAL #{recentDays} DAY) AND #{baseDate}
+            GROUP BY sku_id
+        ) outb ON s.sku_id = outb.sku_id
+        WHERE 1=1
+        <if test="clientId != null">
+            AND s.client_id = #{clientId}
+        </if>
+        ORDER BY s.category, s.sku_code
+    </select>
+
+</mapper>
