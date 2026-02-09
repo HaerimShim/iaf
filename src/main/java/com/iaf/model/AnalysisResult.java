@@ -26,8 +26,8 @@ public class AnalysisResult {
     public void setOnHandQty(Integer onHandQty) { this.onHandQty = onHandQty; }
     public Double getAvgDailyOutbound() { return avgDailyOutbound; }
     public void setAvgDailyOutbound(Double avgDailyOutbound) { this.avgDailyOutbound = avgDailyOutbound; }
-    public String getEstimatedSoldOutDateDate() { return estimatedSoldOutDate; }
-    public void setEstimatedSoldOutDateDate(String estimatedDepletionDate) { this.estimatedSoldOutDate = estimatedDepletionDate; }
+    public String getEstimatedSoldOutDate() { return estimatedSoldOutDate; }
+    public void setEstimatedSoldOutDate(String estimatedSoldOutDate) { this.estimatedSoldOutDate = estimatedSoldOutDate; }
     public String getStatus() { return status; }
     public void setStatus(String status) { this.status = status; }
     public String getRecommendation() { return recommendation; }
