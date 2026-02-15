@@ -18,8 +18,21 @@
         ORDER BY category
     </select>
 
-    <select id="selectAnalysisResult" parameterType="AnalysisSearchParam" resultType="AnalysisResult">
+    <delete id="deleteAnalysisResultByBaseDate">
+        DELETE FROM ANALYSIS_RESULT
+        WHERE base_date = #{baseDate}
+    </delete>
+
+    <insert id="insertAnalysisResult">
+        INSERT INTO ANALYSIS_RESULT (
+            base_date, client_id, category, sku_code, sku_name,
+            on_hand_qty, avg_daily_outbound_recent7days, avg_daily_outbound_recent28days,
+            estimated_sold_out_date_recent7days, estimated_sold_out_date_recent28days,
+            days_remaining, status, recommendation
+        )
         SELECT
+            #{baseDate},
+            t.client_id,
             t.category,
             t.sku_code,
             t.sku_name,
@@ -30,24 +43,26 @@
                 WHEN t.avg_daily_outbound_recent7days > 0
                 THEN DATE_FORMAT(DATE_ADD(#{baseDate}, INTERVAL FLOOR(t.on_hand_qty / t.avg_daily_outbound_recent7days) DAY), '%Y-%m-%d')
                 ELSE '-'
-            END AS estimated_sold_out_date_recent7days,
+            END,
             CASE
                 WHEN t.avg_daily_outbound_recent28days > 0
                 THEN DATE_FORMAT(DATE_ADD(#{baseDate}, INTERVAL FLOOR(t.on_hand_qty / t.avg_daily_outbound_recent28days) DAY), '%Y-%m-%d')
                 ELSE '-'
-            END AS estimated_sold_out_date_recent28days,
+            END,
+            t.days_remaining,
             CASE
                 WHEN t.days_remaining &lt;= 7  THEN 'DANGER'
                 WHEN t.days_remaining &lt;= 14 THEN 'WARNING'
                 ELSE 'SAFE'
-            END AS status,
+            END,
             CASE
                 WHEN t.days_remaining &lt;= 7  THEN '긴급 입고 필요'
                 WHEN t.days_remaining &lt;= 14 THEN '입고 검토 필요'
                 ELSE '적정 재고'
-            END AS recommendation
+            END
         FROM (
             SELECT
+                s.client_id,
                 s.category,
                 s.sku_code,
                 s.sku_name,
@@ -76,23 +91,37 @@
                 WHERE outbound_dt BETWEEN DATE_SUB(#{baseDate}, INTERVAL 28 DAY) AND #{baseDate}
                 GROUP BY sku_id
             ) outb28 ON s.sku_id = outb28.sku_id
-            WHERE 1=1
-            <if test="clientId != null">
-                AND s.client_id = #{clientId}
-            </if>
-            <if test="category != null and category != ''">
-                AND s.category = #{category}
-            </if>
+            INNER JOIN CLIENT c ON s.client_id = c.client_id AND c.status = 'ACTIVE'
         ) t
-        <if test="statusFilter != null and statusFilter != ''">
-        WHERE
-            CASE
-                WHEN t.days_remaining &lt;= 7  THEN 'DANGER'
-                WHEN t.days_remaining &lt;= 14 THEN 'WARNING'
-                ELSE 'SAFE'
-            END = #{statusFilter}
+    </insert>
+
+    <select id="selectAnalysisResult" parameterType="AnalysisSearchParam" resultType="AnalysisResult">
+        SELECT
+            client_id,
+            base_date,
+            category,
+            sku_code,
+            sku_name,
+            on_hand_qty,
+            avg_daily_outbound_recent7days,
+            avg_daily_outbound_recent28days,
+            estimated_sold_out_date_recent7days,
+            estimated_sold_out_date_recent28days,
+            days_remaining,
+            status,
+            recommendation
+        FROM ANALYSIS_RESULT
+        WHERE base_date = #{baseDate}
+        <if test="clientId != null">
+            AND client_id = #{clientId}
         </if>
-        ORDER BY t.category, t.sku_code
+        <if test="category != null and category != ''">
+            AND category = #{category}
+        </if>
+        <if test="statusFilter != null and statusFilter != ''">
+            AND status = #{statusFilter}
+        </if>
+        ORDER BY category, sku_code
     </select>
 
 </mapper>

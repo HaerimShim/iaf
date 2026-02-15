@@ -1,6 +1,9 @@
 package com.iaf.model;
 
 public class AnalysisResult {
+    private Long clientId;
+    private String baseDate;
+    private Integer daysRemaining;
     private String category;
     private String skuCode;
     private String skuName;
@@ -12,6 +15,12 @@ public class AnalysisResult {
     private String status;
     private String recommendation;
 
+    public Long getClientId() { return clientId; }
+    public void setClientId(Long clientId) { this.clientId = clientId; }
+    public String getBaseDate() { return baseDate; }
+    public void setBaseDate(String baseDate) { this.baseDate = baseDate; }
+    public Integer getDaysRemaining() { return daysRemaining; }
+    public void setDaysRemaining(Integer daysRemaining) { this.daysRemaining = daysRemaining; }
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }
     public String getSkuCode() { return skuCode; }

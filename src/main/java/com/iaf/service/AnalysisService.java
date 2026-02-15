@@ -5,6 +5,7 @@ import com.iaf.model.AnalysisResult;
 import com.iaf.model.AnalysisSearchParam;
 import com.iaf.model.Client;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -32,5 +33,11 @@ public class AnalysisService {
             param.setBaseDate(LocalDate.now().toString());
         }
         return analysisMapper.selectAnalysisResult(param);
+    }
+
+    @Transactional
+    public int insertAnalysisResult(AnalysisSearchParam param) {
+        analysisMapper.deleteAnalysisResultByBaseDate(param);
+        return analysisMapper.insertAnalysisResult(param);
     }
 }
