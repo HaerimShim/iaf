@@ -79,7 +79,7 @@
             <th rowspan="2">카테고리</th>
             <th rowspan="2">SKU 코드</th>
             <th rowspan="2">SKU 명</th>
-            <th rowspan="2">기준 재고</th>
+            <th rowspan="2">가용 재고</th>
             <th colspan="2" class="analysis-result">최근 7일</th>
             <th colspan="2" class="analysis-result">최근 28일</th>
             <th rowspan="2" class="analysis-result">상태</th>
@@ -101,7 +101,7 @@
                         <td>${row.category}</td>
                         <td>${row.skuCode}</td>
                         <td>${row.skuName}</td>
-                        <td class="num"><fmt:formatNumber value="${row.onHandQty}" pattern="#,###"/></td>
+                        <td class="num"><fmt:formatNumber value="${row.availableQty}" pattern="#,###"/></td>
                         <td class="num"><fmt:formatNumber value="${row.avgDailyOutboundRecent7days}" pattern="#,###.##"/></td>
                         <td class="analysis-result">${row.estimatedSoldOutDateRecent7days}</td>
                         <td class="num"><fmt:formatNumber value="${row.avgDailyOutboundRecent28days}" pattern="#,###.##"/></td>

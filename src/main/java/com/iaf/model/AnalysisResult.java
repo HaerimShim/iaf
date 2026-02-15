@@ -7,7 +7,7 @@ public class AnalysisResult {
     private String category;
     private String skuCode;
     private String skuName;
-    private Integer onHandQty;
+    private Integer availableQty;
     private Double avgDailyOutboundRecent7days;
     private Double avgDailyOutboundRecent28days;
     private String estimatedSoldOutDateRecent7days;
@@ -27,8 +27,8 @@ public class AnalysisResult {
     public void setSkuCode(String skuCode) { this.skuCode = skuCode; }
     public String getSkuName() { return skuName; }
     public void setSkuName(String skuName) { this.skuName = skuName; }
-    public Integer getOnHandQty() { return onHandQty; }
-    public void setOnHandQty(Integer onHandQty) { this.onHandQty = onHandQty; }
+    public Integer getAvailableQty() { return availableQty; }
+    public void setAvailableQty(Integer availableQty) { this.availableQty = availableQty; }
     public Double getAvgDailyOutboundRecent7days() { return avgDailyOutboundRecent7days; }
     public void setAvgDailyOutboundRecent7days(Double avgDailyOutboundRecent7days) { this.avgDailyOutboundRecent7days = avgDailyOutboundRecent7days; }
     public Double getAvgDailyOutboundRecent28days() { return avgDailyOutboundRecent28days; }

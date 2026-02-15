@@ -26,7 +26,7 @@
     <insert id="insertAnalysisResult">
         INSERT INTO ANALYSIS_RESULT (
             base_date, client_id, category, sku_code, sku_name,
-            on_hand_qty, avg_daily_outbound_recent7days, avg_daily_outbound_recent28days,
+            available_qty, avg_daily_outbound_recent7days, avg_daily_outbound_recent28days,
             estimated_sold_out_date_recent7days, estimated_sold_out_date_recent28days,
             days_remaining, status, recommendation
         )
@@ -36,18 +36,18 @@
             t.category,
             t.sku_code,
             t.sku_name,
-            t.on_hand_qty,
+            t.available_qty,
             t.avg_daily_outbound_recent7days,
             t.avg_daily_outbound_recent28days,
             CASE
                 WHEN t.avg_daily_outbound_recent7days > 0
-                THEN DATE_FORMAT(DATE_ADD(#{baseDate}, INTERVAL FLOOR(t.on_hand_qty / t.avg_daily_outbound_recent7days) DAY), '%Y-%m-%d')
-                ELSE '-'
+                THEN DATE_ADD(#{baseDate}, INTERVAL FLOOR(t.available_qty / t.avg_daily_outbound_recent7days) DAY)
+                ELSE NULL
             END,
             CASE
                 WHEN t.avg_daily_outbound_recent28days > 0
-                THEN DATE_FORMAT(DATE_ADD(#{baseDate}, INTERVAL FLOOR(t.on_hand_qty / t.avg_daily_outbound_recent28days) DAY), '%Y-%m-%d')
-                ELSE '-'
+                THEN DATE_ADD(#{baseDate}, INTERVAL FLOOR(t.available_qty / t.avg_daily_outbound_recent28days) DAY)
+                ELSE NULL
             END,
             t.days_remaining,
             CASE
@@ -66,12 +66,12 @@
                 s.category,
                 s.sku_code,
                 s.sku_name,
-                snap.on_hand_qty,
+                (snap.on_hand_qty - COALESCE(snap.reserved_qty, 0)) AS available_qty,
                 ROUND(COALESCE(outb7.outbound_qty, 0)  / 7.0,  2) AS avg_daily_outbound_recent7days,
                 ROUND(COALESCE(outb28.outbound_qty, 0) / 28.0, 2) AS avg_daily_outbound_recent28days,
                 CASE
                     WHEN GREATEST(COALESCE(outb7.outbound_qty, 0), COALESCE(outb28.outbound_qty, 0)) = 0 THEN 9999
-                    ELSE FLOOR(snap.on_hand_qty / GREATEST(
+                    ELSE FLOOR((snap.on_hand_qty - COALESCE(snap.reserved_qty, 0)) / GREATEST(
                         COALESCE(outb7.outbound_qty, 0) / 7.0,
                         COALESCE(outb28.outbound_qty, 0) / 28.0
                     ))
@@ -102,11 +102,11 @@
             category,
             sku_code,
             sku_name,
-            on_hand_qty,
+            available_qty,
             avg_daily_outbound_recent7days,
             avg_daily_outbound_recent28days,
-            estimated_sold_out_date_recent7days,
-            estimated_sold_out_date_recent28days,
+            COALESCE(DATE_FORMAT(estimated_sold_out_date_recent7days, '%Y-%m-%d'), '-') AS estimated_sold_out_date_recent7days,
+            COALESCE(DATE_FORMAT(estimated_sold_out_date_recent28days, '%Y-%m-%d'), '-') AS estimated_sold_out_date_recent28days,
             days_remaining,
             status,
             recommendation
