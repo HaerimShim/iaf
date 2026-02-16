@@ -15,9 +15,4 @@ public class HomeController {
     public String omsHistory() {
         return "omsHistory";
     }
-
-    @GetMapping("/report")
-    public String report() {
-        return "report";
-    }
 }
