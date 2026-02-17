@@ -1,6 +1,7 @@
 package com.iaf.controller;
 
 import com.iaf.model.AnalysisSearchParam;
+import com.iaf.scheduler.AnalysisScheduler;
 import com.iaf.service.AnalysisService;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -15,10 +16,11 @@ import java.util.List;
 public class AnalysisController {
 
     private final AnalysisService analysisService;
+    private final AnalysisScheduler analysisScheduler;
 
-    // Spring 4.3+ : 단일 생성자 = 자동 주입
-    public AnalysisController(AnalysisService analysisService) {
+    public AnalysisController(AnalysisService analysisService, AnalysisScheduler analysisScheduler) {
         this.analysisService = analysisService;
+        this.analysisScheduler = analysisScheduler;
     }
 
     @GetMapping("/analysis")
@@ -40,5 +42,12 @@ public class AnalysisController {
     @ResponseBody
     public List<String> getCategoriesByClient(@RequestParam Long clientId) {
         return analysisService.getCategoryListByClientId(clientId);
+    }
+
+    @GetMapping("/analysis/test")
+    @ResponseBody
+    public String testAnalysis(@RequestParam String baseDate) {
+        analysisScheduler.runAnalysis(baseDate);
+        return "OK";
     }
 }

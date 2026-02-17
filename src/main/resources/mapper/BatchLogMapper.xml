@@ -8,4 +8,12 @@
         VALUES (#{batchName}, #{baseDate}, #{status}, #{insertCount}, #{elapsedMs}, #{errorMessage})
     </insert>
 
+    <select id="existsSuccessBatchLog" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM BATCH_LOG
+        WHERE batch_name = #{batchName}
+          AND base_date = #{baseDate}
+          AND status = 'SUCCESS'
+    </select>
+
 </mapper>

@@ -1,9 +1,9 @@
 package com.iaf.scheduler;
 
-import com.iaf.mapper.BatchLogMapper;
 import com.iaf.model.AnalysisSearchParam;
-import com.iaf.model.BatchLog;
 import com.iaf.service.AnalysisService;
+import com.iaf.service.BatchLogService;
+import com.iaf.service.OmsNotificationService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -18,17 +18,21 @@ public class AnalysisScheduler {
     private static final String BATCH_NAME = "IAF_ANALYSIS_RESULT";
 
     private final AnalysisService analysisService;
-    private final BatchLogMapper batchLogMapper;
+    private final BatchLogService batchLogService;
+    private final OmsNotificationService omsNotificationService;
 
-    public AnalysisScheduler(AnalysisService analysisService, BatchLogMapper batchLogMapper) {
+    public AnalysisScheduler(AnalysisService analysisService, BatchLogService batchLogService, OmsNotificationService omsNotificationService) {
         this.analysisService = analysisService;
-        this.batchLogMapper = batchLogMapper;
+        this.batchLogService = batchLogService;
+        this.omsNotificationService = omsNotificationService;
     }
 
     @Scheduled(cron = "0 30 2 * * *", zone = "Asia/Seoul")
     public void runDailyAnalysis() {
+        runAnalysis(LocalDate.now().toString());
+    }
 
-        String baseDate = LocalDate.now().toString();
+    public void runAnalysis(String baseDate) {
         AnalysisSearchParam param = new AnalysisSearchParam();
         param.setBaseDate(baseDate);
 
@@ -46,31 +50,26 @@ public class AnalysisScheduler {
 
             log.info("[{} BATCH {}] - baseDate: {}, 적재 건수: {}, 소요시간: {}ms", BATCH_NAME, status, baseDate, insertCount, elapsed);
 
-            BatchLog batchLog = new BatchLog();
-            batchLog.setBatchName(BATCH_NAME);
-            batchLog.setBaseDate(baseDate);
-            batchLog.setStatus(status);
-            batchLog.setInsertCount(insertCount);
-            batchLog.setElapsedMs(elapsed);
-            batchLogMapper.insertBatchLog(batchLog);
+            batchLogService.save(BATCH_NAME, baseDate, status, insertCount, elapsed, null);
 
         } catch (Exception e) {
             long elapsed = System.currentTimeMillis() - startTime;
 
             log.error("[{} BATCH ERROR] - baseDate: {}, 소요시간: {}ms", BATCH_NAME, baseDate, elapsed, e);
 
-            try {
-                BatchLog batchLog = new BatchLog();
-                batchLog.setBatchName(BATCH_NAME);
-                batchLog.setBaseDate(baseDate);
-                batchLog.setStatus("FAIL");
-                batchLog.setInsertCount(0);
-                batchLog.setElapsedMs(elapsed);
-                batchLog.setErrorMessage(e.getMessage());
-                batchLogMapper.insertBatchLog(batchLog);
-            } catch (Exception logEx) {
-                log.error("[{} BATCH LOG INSERT ERROR]", BATCH_NAME, logEx);
-            }
+            batchLogService.save(BATCH_NAME, baseDate, "FAIL", 0, elapsed, e.getMessage());
         }
+    }
+
+    @Scheduled(cron = "0 0 5 * * *", zone = "Asia/Seoul")
+    public void runDailyOmsNotification() {
+        String baseDate = LocalDate.now().toString();
+
+        if (!batchLogService.isCompleted(BATCH_NAME, baseDate)) {
+            log.warn("[IAF_OMS_NOTIFICATION] baseDate: {} - ANALYSIS_RESULT 적재 미완료, OMS 발송 생략", baseDate);
+            return;
+        }
+
+        omsNotificationService.sendAlerts(baseDate);
     }
 }

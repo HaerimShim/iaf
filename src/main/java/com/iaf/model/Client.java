@@ -4,6 +4,7 @@ public class Client {
     private Long clientId;
     private String clientName;
     private String status;
+    private String omsUrl;
 
     public Long getClientId() {
         return clientId;
@@ -27,5 +28,13 @@ public class Client {
 
     public void setStatus(String status) {
         this.status = status;
+    }
+
+    public String getOmsUrl() {
+        return omsUrl;
+    }
+
+    public void setOmsUrl(String omsUrl) {
+        this.omsUrl = omsUrl;
     }
 }

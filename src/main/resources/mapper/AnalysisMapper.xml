@@ -4,7 +4,7 @@
 <mapper namespace="com.iaf.mapper.AnalysisMapper">
 
     <select id="selectClientList" resultType="Client">
-        SELECT client_id, client_name, status
+        SELECT client_id, client_name, status, oms_url
         FROM CLIENT
         WHERE status = 'ACTIVE'
         ORDER BY client_name
@@ -94,6 +94,15 @@
             INNER JOIN CLIENT c ON s.client_id = c.client_id AND c.status = 'ACTIVE'
         ) t
     </insert>
+
+    <select id="selectAlertsByClientAndBaseDate" parameterType="AnalysisSearchParam" resultType="AnalysisResult">
+        SELECT client_id, base_date, sku_code, sku_name, category, available_qty, days_remaining, status, recommendation
+        FROM ANALYSIS_RESULT
+        WHERE base_date = #{baseDate}
+          AND client_id = #{clientId}
+          AND status IN ('WARNING', 'DANGER')
+        ORDER BY days_remaining
+    </select>
 
     <select id="selectAnalysisResult" parameterType="AnalysisSearchParam" resultType="AnalysisResult">
         SELECT

@@ -13,6 +13,7 @@ import java.util.List;
 public interface AnalysisMapper {
     List<Client> selectClientList();
     List<String> selectCategoryListByClientId(Long clientId);
+    List<AnalysisResult> selectAlertsByClientAndBaseDate(AnalysisSearchParam param);
     List<AnalysisResult> selectAnalysisResult(AnalysisSearchParam param);
     void deleteAnalysisResultByBaseDate(AnalysisSearchParam param);
     int insertAnalysisResult(AnalysisSearchParam param);
