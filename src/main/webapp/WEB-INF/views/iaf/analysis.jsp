@@ -114,7 +114,14 @@
                             </c:choose>
                         </td>
                         <td class="analysis-result">${row.recommendation}</td>
-                        <td class="analysis-oms"> </td>
+                        <td class="analysis-oms">
+                            <c:choose>
+                                <c:when test="${row.status == 'SAFE'}">N/A</c:when>
+                                <c:when test="${row.omsStatus == 'SUCCESS'}"><span class="status-safe">발송완료</span></c:when>
+                                <c:when test="${row.omsStatus == 'FAIL'}"><span class="status-danger">발송실패</span></c:when>
+                                <c:otherwise>미발송</c:otherwise>
+                            </c:choose>
+                        </td>
                     </tr>
                 </c:forEach>
             </c:when>

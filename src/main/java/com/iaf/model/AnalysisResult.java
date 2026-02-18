@@ -14,6 +14,7 @@ public class AnalysisResult {
     private String estimatedSoldOutDateRecent28days;
     private String status;
     private String recommendation;
+    private String omsStatus;
 
     public Long getClientId() { return clientId; }
     public void setClientId(Long clientId) { this.clientId = clientId; }
@@ -41,4 +42,6 @@ public class AnalysisResult {
     public void setStatus(String status) { this.status = status; }
     public String getRecommendation() { return recommendation; }
     public void setRecommendation(String recommendation) { this.recommendation = recommendation; }
+    public String getOmsStatus() { return omsStatus; }
+    public void setOmsStatus(String omsStatus) { this.omsStatus = omsStatus; }
 }

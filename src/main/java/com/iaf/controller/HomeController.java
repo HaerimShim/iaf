@@ -10,9 +10,4 @@ public class HomeController {
     public String home() {
         return "redirect:/analysis";
     }
-
-    @GetMapping("/oms-history")
-    public String omsHistory() {
-        return "omsHistory";
-    }
 }

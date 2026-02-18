@@ -106,31 +106,34 @@
 
     <select id="selectAnalysisResult" parameterType="AnalysisSearchParam" resultType="AnalysisResult">
         SELECT
-            client_id,
-            base_date,
-            category,
-            sku_code,
-            sku_name,
-            available_qty,
-            avg_daily_outbound_recent7days,
-            avg_daily_outbound_recent28days,
-            COALESCE(DATE_FORMAT(estimated_sold_out_date_recent7days, '%Y-%m-%d'), '-') AS estimated_sold_out_date_recent7days,
-            COALESCE(DATE_FORMAT(estimated_sold_out_date_recent28days, '%Y-%m-%d'), '-') AS estimated_sold_out_date_recent28days,
-            days_remaining,
-            status,
-            recommendation
-        FROM ANALYSIS_RESULT
-        WHERE base_date = #{baseDate}
+            ar.client_id,
+            ar.base_date,
+            ar.category,
+            ar.sku_code,
+            ar.sku_name,
+            ar.available_qty,
+            ar.avg_daily_outbound_recent7days,
+            ar.avg_daily_outbound_recent28days,
+            COALESCE(DATE_FORMAT(ar.estimated_sold_out_date_recent7days, '%Y-%m-%d'), '-') AS estimated_sold_out_date_recent7days,
+            COALESCE(DATE_FORMAT(ar.estimated_sold_out_date_recent28days, '%Y-%m-%d'), '-') AS estimated_sold_out_date_recent28days,
+            ar.days_remaining,
+            ar.status,
+            ar.recommendation,
+            onh.status AS oms_status
+        FROM ANALYSIS_RESULT ar
+        LEFT JOIN OMS_NOTIFICATION_HISTORY onh
+            ON ar.client_id = onh.client_id AND ar.base_date = onh.base_date
+        WHERE ar.base_date = #{baseDate}
         <if test="clientId != null">
-            AND client_id = #{clientId}
+            AND ar.client_id = #{clientId}
         </if>
         <if test="category != null and category != ''">
-            AND category = #{category}
+            AND ar.category = #{category}
         </if>
         <if test="statusFilter != null and statusFilter != ''">
-            AND status = #{statusFilter}
+            AND ar.status = #{statusFilter}
         </if>
-        ORDER BY category, sku_code
+        ORDER BY ar.category, ar.sku_code
     </select>
 
 </mapper>

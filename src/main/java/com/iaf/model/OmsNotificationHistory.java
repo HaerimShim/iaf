@@ -4,6 +4,7 @@ public class OmsNotificationHistory {
     private Long historyId;
     private String baseDate;
     private Long clientId;
+    private String clientName;
     private String omsUrl;
     private String requestPayload;
     private String status;
@@ -17,6 +18,8 @@ public class OmsNotificationHistory {
     public void setBaseDate(String baseDate) { this.baseDate = baseDate; }
     public Long getClientId() { return clientId; }
     public void setClientId(Long clientId) { this.clientId = clientId; }
+    public String getClientName() { return clientName; }
+    public void setClientName(String clientName) { this.clientName = clientName; }
     public String getOmsUrl() { return omsUrl; }
     public void setOmsUrl(String omsUrl) { this.omsUrl = omsUrl; }
     public String getRequestPayload() { return requestPayload; }

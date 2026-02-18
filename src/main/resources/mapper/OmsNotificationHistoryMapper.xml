@@ -8,5 +8,22 @@
         VALUES (#{baseDate}, #{clientId}, #{omsUrl}, #{requestPayload}, #{status}, #{errorMessage}, #{elapsedMs})
     </insert>
 
+    <select id="selectOmsNotificationHistory" parameterType="OmsNotificationHistory" resultType="OmsNotificationHistory">
+        SELECT h.history_id, h.base_date, h.client_id, c.client_name, h.oms_url,
+               h.request_payload, h.status, h.error_message, h.elapsed_ms, h.created_at
+        FROM OMS_NOTIFICATION_HISTORY h
+        LEFT JOIN CLIENT c ON h.client_id = c.client_id
+        WHERE 1=1
+        <if test="baseDate != null and baseDate != ''">
+            AND h.base_date = #{baseDate}
+        </if>
+        <if test="clientId != null">
+            AND h.client_id = #{clientId}
+        </if>
+        <if test="status != null and status != ''">
+            AND h.status = #{status}
+        </if>
+        ORDER BY h.created_at DESC
+    </select>
 
 </mapper>
