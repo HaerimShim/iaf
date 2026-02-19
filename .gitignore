@@ -35,3 +35,15 @@ build/
 /out/
 /target/
 /build/
+
+### Build ###
+/target/
+/build/
+*.class
+*.jar
+*.war
+*.ear
+
+### Logs ###
+logs/
+*.log
