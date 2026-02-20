@@ -122,6 +122,7 @@
     <select id="selectAnalysisResult" parameterType="SearchParam" resultType="AnalysisResult">
         SELECT
             ar.client_id,
+            c.client_name,
             ar.base_date,
             ar.category,
             ar.sku_code,
@@ -145,6 +146,7 @@
                 GROUP BY client_id, base_date
             )
         ) onh ON ar.client_id = onh.client_id AND ar.base_date = onh.base_date
+        JOIN CLIENT c ON ar.client_id = c.client_id
         WHERE ar.base_date = #{baseDate}
         <if test="clientId != null">
             AND ar.client_id = #{clientId}

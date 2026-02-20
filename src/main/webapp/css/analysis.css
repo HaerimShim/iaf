@@ -28,3 +28,6 @@ th.analysis-oms { background-color: #d4edda; }
 .pagination a:hover { color: #2c3e50; }
 .pagination a.active { color: #2c3e50; font-weight: bold; text-decoration: underline; }
 .pagination .page-info { font-size: 13px; color: #666; margin-left: 8px; }
+.status-success { color: #28a745; }
+.status-fail { color: #dc3545; }
+.status-skip { color: #ffc107; }

@@ -58,9 +58,10 @@
 
 <table>
     <colgroup>
-        <col style="width:12%">
-        <col style="width:12%">
-        <col style="width:12%">
+        <col style="width:10%">
+        <col style="width:10%">
+        <col style="width:10%">
+        <col style="width:10%">
         <col style="width:8%">
         <col style="width:8%">
         <col style="width:8%">
@@ -72,11 +73,12 @@
     </colgroup>
     <thead>
         <tr>
-            <th colspan="4">기준 데이터</th>
+            <th colspan="5">기준 데이터</th>
             <th colspan="6" class="analysis-result">분석</th>
             <th colspan="1" class="analysis-oms">조치</th>
         </tr>
         <tr>
+            <th rowspan="2">업체(고객사)</th>
             <th rowspan="2">카테고리</th>
             <th rowspan="2">SKU 코드</th>
             <th rowspan="2">SKU 명</th>
@@ -99,6 +101,7 @@
             <c:when test="${not empty analysisList}">
                 <c:forEach var="row" items="${analysisList}">
                     <tr>
+                        <td>${row.clientName}</td>
                         <td>${row.category}</td>
                         <td>${row.skuCode}</td>
                         <td>${row.skuName}</td>
@@ -118,9 +121,10 @@
                         <td class="analysis-oms">
                             <c:choose>
                                 <c:when test="${row.status == 'SAFE'}">N/A</c:when>
-                                <c:when test="${row.omsStatus == 'SUCCESS'}"><span class="status-safe">발송완료</span></c:when>
-                                <c:when test="${row.omsStatus == 'FAIL'}"><span class="status-danger">발송실패</span></c:when>
-                                <c:otherwise>미발송</c:otherwise>
+                                <c:when test="${row.omsStatus == 'SUCCESS'}"><span class="status-success">성공</span></c:when>
+                                <c:when test="${row.omsStatus == 'FAIL'}"><span class="status-fail">실패</span></c:when>
+                                <c:when test="${row.omsStatus == 'SKIP'}"><span class="status-skip">보류</span></c:when>
+                                <c:otherwise>N/A</c:otherwise>
                             </c:choose>
                         </td>
                     </tr>
