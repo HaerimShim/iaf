@@ -76,7 +76,7 @@
     <thead>
         <tr>
             <th>고객사</th>
-            <th>발송 URL</th>
+            <th>OMS URL</th>
             <th>전송결과</th>
             <th>소요시간</th>
             <th>전송일시</th>
