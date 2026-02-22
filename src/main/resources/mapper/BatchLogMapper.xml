@@ -16,4 +16,35 @@
           AND status = 'SUCCESS'
     </select>
 
+
+    <sql id="batchLogWhere">
+        WHERE 1=1
+        <if test="baseDateFrom != null and baseDateFrom != ''">
+            AND base_date >= #{baseDateFrom}
+        </if>
+        <if test="baseDateTo != null and baseDateTo != ''">
+            AND base_date &lt;= #{baseDateTo}
+        </if>
+        <if test="batchName != null and batchName != ''">
+            AND batch_name = #{batchName}
+        </if>
+        <if test="status != null and status != ''">
+            AND status = #{status}
+        </if>
+    </sql>
+
+    <select id="countBatchLog" parameterType="SearchParam" resultType="int">
+        SELECT COUNT(*)
+        FROM BATCH_LOG
+        <include refid="batchLogWhere"/>
+    </select>
+
+    <select id="selectBatchLog" parameterType="SearchParam" resultType="BatchLog">
+        SELECT batch_log_id, batch_name, base_date, status, insert_count, elapsed_ms, error_message, created_at
+        FROM BATCH_LOG
+        <include refid="batchLogWhere"/>
+        ORDER BY created_at DESC
+        LIMIT #{pageSize} OFFSET #{offset}
+    </select>
+
 </mapper>

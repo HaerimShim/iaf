@@ -121,7 +121,7 @@
                         </td>
                         <td>
                             <c:if test="${row.status == 'FAIL' or row.status == 'SKIP'}">
-                                <button class="resend-btn" onclick="resend('${row.baseDate}', ${row.clientId}, '${row.clientName}')">재발송</button>
+                                <button class="resend-btn" onclick="resend('${row.baseDate}', ${row.clientId}, '${row.clientName}', this)">재발송</button>
                             </c:if>
                         </td>
                     </tr>
@@ -250,8 +250,10 @@
         });
     });
 
-    function resend(baseDate, clientId, clientName) {
+    function resend(baseDate, clientId, clientName, btn) {
         if (!confirm('[' + baseDate + '] ' + clientName + '\n재발송하시겠습니까?')) return;
+        btn.disabled = true;
+        btn.textContent = '발송중';
         fetch(contextPath + '/oms/resendOne', {
             method: 'POST',
             headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -266,7 +268,11 @@
             }
             location.reload();
         })
-        .catch(function() { alert('재발송 중 오류가 발생했습니다.'); });
+        .catch(function() {
+            alert('재발송 중 오류가 발생했습니다.');
+            btn.disabled = false;
+            btn.textContent = '재발송';
+        });
     }
 </script>
 </body>

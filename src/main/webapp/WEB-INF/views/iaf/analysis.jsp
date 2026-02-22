@@ -37,7 +37,7 @@
             </select>
         </div>
         <div class="form-item">
-            <label for="status">상태 필터</label>
+            <label for="status">상태</label>
             <select id="status" name="status">
                 <option value="">전체</option>
                 <option value="SAFE" <c:if test="${searchParam.status == 'SAFE'}">selected</c:if>>안전</option>

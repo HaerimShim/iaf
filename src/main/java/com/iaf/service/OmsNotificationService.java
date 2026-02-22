@@ -11,8 +11,11 @@ import com.iaf.model.OmsNotification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
+
+import java.time.Duration;
 
 import java.util.HashMap;
 import java.util.List;
@@ -36,7 +39,10 @@ public class OmsNotificationService {
         this.clientMapper = clientMapper;
         this.omsNotificationMapper = omsNotificationMapper;
         this.objectMapper = objectMapper;
-        this.restClient = RestClient.create();
+        SimpleClientHttpRequestFactory factory = new SimpleClientHttpRequestFactory();
+        factory.setConnectTimeout(Duration.ofSeconds(5));
+        factory.setReadTimeout(Duration.ofSeconds(10));
+        this.restClient = RestClient.builder().requestFactory(factory).build();
     }
 
     public Map<String, Object> getStatusSummary(SearchParam param) {
@@ -76,18 +82,23 @@ public class OmsNotificationService {
             return;
         }
 
+        SearchParam param = new SearchParam();
+        param.setClientId(clientId);
+        param.setBaseDate(baseDate);
+        List<AnalysisResult> alerts = analysisMapper.selectAlertsByClientAndBaseDate(param);
+
+        if (alerts.isEmpty()) {
+            log.info("[{}] 고객사 {}({}) - WARNING/DANGER 항목 없음, 발송 생략", BATCH_NAME, clientName, clientId);
+            return;
+        }
+
+        String status = "FAIL";
+        String errorMessage = null;
+        String payloadJson = null;
         long startTime = System.currentTimeMillis();
+        long elapsed = 0;
+
         try {
-            SearchParam param = new SearchParam();
-            param.setClientId(clientId);
-            param.setBaseDate(baseDate);
-            List<AnalysisResult> alerts = analysisMapper.selectAlertsByClientAndBaseDate(param);
-
-            if (alerts.isEmpty()) {
-                log.info("[{}] 고객사 {}({}) - WARNING/DANGER 항목 없음, 발송 생략", BATCH_NAME, clientName, clientId);
-                return;
-            }
-
             Map<String, Object> payload = new HashMap<>();
             payload.put("baseDate", baseDate);
             payload.put("clientId", clientId);
@@ -105,7 +116,7 @@ public class OmsNotificationService {
             }).toList();
             payload.put("alerts", alertList);
 
-            String payloadJson = objectMapper.writeValueAsString(payload);
+            payloadJson = objectMapper.writeValueAsString(payload);
 
             restClient.post()
                     .uri(client.getOmsUrl())
@@ -114,16 +125,17 @@ public class OmsNotificationService {
                     .retrieve()
                     .toBodilessEntity();
 
-            long elapsed = System.currentTimeMillis() - startTime;
+            elapsed = System.currentTimeMillis() - startTime;
+            status = "SUCCESS";
             log.info("[{}] 고객사 {}({}) - 발송 성공, {}건, {}ms", BATCH_NAME, clientName, clientId, alerts.size(), elapsed);
 
-            saveOmsNotification(baseDate, clientId, client.getOmsUrl(), payloadJson, "SUCCESS", null, elapsed);
-
         } catch (Exception e) {
-            long elapsed = System.currentTimeMillis() - startTime;
+            elapsed = System.currentTimeMillis() - startTime;
+            errorMessage = e.getMessage();
             log.error("[{}] 고객사 {}({}) - 발송 실패, {}ms", BATCH_NAME, clientName, clientId, elapsed, e);
 
-            saveOmsNotification(baseDate, clientId, client.getOmsUrl(), null, "FAIL", e.getMessage(), elapsed);
+        } finally {
+            saveOmsNotification(baseDate, clientId, client.getOmsUrl(), payloadJson, status, errorMessage, elapsed);
         }
     }
 

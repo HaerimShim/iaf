@@ -8,6 +8,9 @@ public class SearchParam {
     private int page = 1;
     private int pageSize = 12;
     private String search;
+    private String batchName;
+    private String baseDateFrom;
+    private String baseDateTo;
 
     public Long getClientId() { return clientId; }
     public void setClientId(Long clientId) { this.clientId = clientId; }
@@ -24,4 +27,10 @@ public class SearchParam {
     public int getOffset() { return (page - 1) * pageSize; }
     public String getSearch() { return search; }
     public void setSearch(String search) { this.search = search; }
+    public String getBatchName() { return batchName; }
+    public void setBatchName(String batchName) { this.batchName = batchName; }
+    public String getBaseDateFrom() { return baseDateFrom; }
+    public void setBaseDateFrom(String baseDateFrom) { this.baseDateFrom = baseDateFrom; }
+    public String getBaseDateTo() { return baseDateTo; }
+    public void setBaseDateTo(String baseDateTo) { this.baseDateTo = baseDateTo; }
 }
