@@ -123,7 +123,7 @@
             <th colspan="2" class="analysis-result">최근 28일</th>
             <th rowspan="2" class="analysis-result">상태</th>
             <th rowspan="2" class="analysis-result">권고사항</th>
-            <th rowspan="2" class="analysis-oms section-border-l">OMS 전송 결과</th>
+            <th rowspan="2" class="analysis-oms section-border-l">OMS<br>전송 결과</th>
         </tr>
         <tr>
             <th class="analysis-result section-border-l">일평균 출고</th>
